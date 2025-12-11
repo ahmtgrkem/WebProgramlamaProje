@@ -1,0 +1,54 @@
+@model WebProgramlamaProje.Models.Gym
+
+@{
+    ViewData["Title"] = "Yeni Spor Salonu Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Yeni Spor Salonu Ekle</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Salon Adı</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">Adres</label>
+                        <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="OpeningHours" class="form-label">Çalışma Saatleri</label>
+                            <input asp-for="OpeningHours" class="form-control" placeholder="Örn: 09:00 - 22:00" />
+                            <span asp-validation-for="OpeningHours" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ContactNumber" class="form-label">İletişim Numarası</label>
+                            <input asp-for="ContactNumber" class="form-control" />
+                            <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a asp-action="Index" class="btn btn-secondary me-md-2">İptal</a>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
