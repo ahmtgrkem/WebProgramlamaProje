@@ -19,6 +19,8 @@ namespace WebProgramlamaProje.Models
         [StringLength(100)]
         public string Specialization { get; set; } = string.Empty;
 
+        public bool IsAvailable { get; set; } = true;
+
         [StringLength(500)]
         public string? AvailabilityDescription { get; set; } // e.g., "Weekdays 9-5"
 
