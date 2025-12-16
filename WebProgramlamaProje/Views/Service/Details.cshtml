@@ -1,0 +1,79 @@
+@model WebProgramlamaProje.Models.Service
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Hizmetler</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h3 mb-0">@Model.Name</h1>
+                        <span class="badge bg-light text-primary fs-5">@Model.Price.ToString("C2")</span>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="bi bi-clock fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Süre</small>
+                                    <span class="fw-bold">@Model.DurationMinutes Dakika</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="bi bi-geo-alt fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Konum</small>
+                                    <span class="fw-bold">@Model.Gym?.Name</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h4 class="mb-3">Hizmet Açıklaması</h4>
+                    <p class="lead text-muted mb-5">
+                        @Model.Description
+                    </p>
+
+                    @if (Model.Trainers != null && Model.Trainers.Any())
+                    {
+                        <h5 class="mb-3">Eğitmenler</h5>
+                        <div class="d-flex flex-wrap gap-2 mb-5">
+                            @foreach (var trainer in Model.Trainers)
+                            {
+                                <span class="badge bg-secondary p-2">
+                                    <i class="bi bi-person-badge me-1"></i> @trainer.FirstName @trainer.LastName
+                                </span>
+                            }
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-primary btn-lg py-3 shadow-sm">
+                            <i class="bi bi-calendar-check me-2"></i>Randevu Al
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
