@@ -67,14 +67,14 @@ namespace WebProgramlamaProje.Services
                 }
 
                 using var doc = JsonDocument.Parse(responseString);
-                
+
                 // Response Parsing
                 // Structure: candidates[0].content.parts[0].text
                 if (doc.RootElement.TryGetProperty("candidates", out var candidates) && candidates.GetArrayLength() > 0)
                 {
                     var firstCandidate = candidates[0];
-                    if (firstCandidate.TryGetProperty("content", out var contentElem) && 
-                        contentElem.TryGetProperty("parts", out var parts) && 
+                    if (firstCandidate.TryGetProperty("content", out var contentElem) &&
+                        contentElem.TryGetProperty("parts", out var parts) &&
                         parts.GetArrayLength() > 0)
                     {
                         var text = parts[0].GetProperty("text").GetString();
