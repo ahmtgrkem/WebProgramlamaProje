@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("572fdd38-47df-4b60-b278-4e95b8f3ab20")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("WebProgramlamaProje")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+89ed23cd3fa2b08be365a882252cbe5b7fec9d04")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a5ca43e7e886ddda77a6f56674d5149f1e2808b6")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebProgramlamaProje")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebProgramlamaProje")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

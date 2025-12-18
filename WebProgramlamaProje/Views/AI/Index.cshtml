@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = "Yapay Zeka Antrenörü";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-3 fw-bold text-primary">
+                <i class="bi bi-robot"></i> Yapay Zeka Antrenörü
+            </h1>
+            <p class="lead text-muted mb-5">
+                Fotoğrafınızı yükleyin, Gemini AI vücut tipinizi analiz etsin ve size özel egzersiz programı önersin.
+            </p>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+                        </div>
+                    }
+
+                    <form asp-action="Analyze" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <div class="mb-4">
+                            <label for="imageFile" class="form-label h5">Boydan Çekilmiş Fotoğrafınızı Yükleyin</label>
+                            <input type="file" class="form-control form-control-lg" id="imageFile" name="imageFile" accept="image/*" required>
+                            <div class="form-text">Desteklenen formatlar: JPG, PNG, WEBP (Max 4MB)</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg py-3" id="analyzeBtn">
+                                <i class="bi bi-magic me-2"></i> Analiz Et ve Tavsiye Al
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Loading Spinner (Hidden by default) -->
+                    <div id="loadingSection" class="d-none mt-4">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                        <h4 class="mt-3 text-primary">Yapay Zeka Analiz Ediyor...</h4>
+                        <p class="text-muted">Lütfen bekleyin, bu işlem birkaç saniye sürebilir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        // Form geçerliyse
+        if (document.getElementById('imageFile').files.length > 0) {
+            // Butonu gizle veya pasif yap
+            document.getElementById('analyzeBtn').classList.add('d-none');
+            // Loading animasyonunu göster
+            document.getElementById('loadingSection').classList.remove('d-none');
+        }
+    });
+</script>

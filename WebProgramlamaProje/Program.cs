@@ -22,6 +22,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+// Register Gemini Service
+builder.Services.AddHttpClient<WebProgramlamaProje.Services.GeminiService>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
