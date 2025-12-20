@@ -166,4 +166,9 @@ C:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaP
 C:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\bin\Debug\net8.0\System.Management.dll
 C:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Management.dll
+c:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\bin\Debug\net8.0\Microsoft.OpenApi.dll
+c:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+c:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+c:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+c:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\obj\Debug\net8.0\WebProgramlamaProje.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Görkem\source\repos\WebProgramlama\WebProgramlamaProje\WebProgramlamaProje\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

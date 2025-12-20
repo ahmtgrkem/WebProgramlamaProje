@@ -1,0 +1,69 @@
+@model IEnumerable<WebProgramlamaProje.Models.Trainer>
+
+@{
+    ViewData["Title"] = "Eğitmenlerimiz";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">Eğitmenlerimiz</h1>
+        <p class="lead text-muted">Alanında uzman profesyonel eğitmen kadromuzla tanışın.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var trainer in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 hover-shadow transition-all">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                <i class="bi bi-person-fill text-primary display-4"></i>
+                            </div>
+                        </div>
+                        <h4 class="card-title fw-bold mb-1">@trainer.FirstName @trainer.LastName</h4>
+                        <p class="text-primary fw-medium mb-3">@trainer.Specialization</p>
+                        
+                        <p class="card-text text-muted small mb-4">
+                            @(string.IsNullOrEmpty(trainer.AvailabilityDescription) ? "Müsaitlik bilgisi için iletişime geçiniz." : trainer.AvailabilityDescription)
+                        </p>
+
+                        <div class="d-grid gap-2">
+                            @if (trainer.IsAvailable)
+                            {
+                                <a asp-controller="Appointment" asp-action="Create" asp-route-trainerId="@trainer.Id" class="btn btn-outline-primary">
+                                    <i class="bi bi-calendar-plus me-2"></i>Randevu Al
+                                </a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" disabled>
+                                    <i class="bi bi-slash-circle me-2"></i>Müsait Değil
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <div class="alert alert-info d-inline-block">
+                <i class="bi bi-info-circle me-2"></i>Henüz kayıtlı eğitmen bulunmamaktadır.
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+</style>

@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -7,86 +7,25 @@ namespace WebProgramlamaProje.Services
     public class GeminiApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
-        private const string ModelName = "gemini-2.5-flash"; // gemini-2.5-flash is not yet widely available/stable in public API, falling back to 1.5-flash which is current SOTA for speed/vision. If 2.5 is strictly required, change this string.
-        private const string ImageModelName = "gemini-3-pro-image-preview"; // Model for image generation/editing
+        private readonly string _analysisApiKey;
+        private readonly string _imageApiKey;
+
+        // Modeller
+        private const string AnalysisModelName = "gemini-2.5-flash";
+        private const string ImageModelName = "gemini-3-pro-image-preview";
 
         public GeminiApiService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiKey = configuration["Gemini:ApiKey"] ?? throw new ArgumentNullException("Gemini API Key is missing in configuration.");
-        }
-
-        public async Task<string?> GenerateEditedImageAsync(IFormFile imageFile, string prompt)
-        {
-            if (imageFile == null || imageFile.Length == 0)
-                throw new ArgumentException("Invalid image file.");
-
-            string base64Image;
-            using (var ms = new MemoryStream())
-            {
-                await imageFile.CopyToAsync(ms);
-                base64Image = Convert.ToBase64String(ms.ToArray());
-            }
-
-            var requestBody = new
-            {
-                contents = new[]
-                {
-                    new
-                    {
-                        parts = new object[]
-                        {
-                            new { text = prompt },
-                            new
-                            {
-                                inline_data = new
-                                {
-                                    mime_type = imageFile.ContentType,
-                                    data = base64Image
-                                }
-                            }
-                        }
-                    }
-                },
-                generationConfig = new
-                {
-                    responseModalities = new[] { "IMAGE" } // Force image output
-                }
-            };
-
-            var jsonContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
-            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{ImageModelName}:generateContent?key={_apiKey}";
-
-            var response = await _httpClient.PostAsync(url, jsonContent);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                // Log error or handle gracefully. For now, return null so the main flow doesn't break.
-                var error = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Image Gen Error: {error}");
-                return null;
-            }
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            var geminiResponse = JsonSerializer.Deserialize<GeminiResponse>(responseString);
-
-            var part = geminiResponse?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault();
-
-            if (part?.InlineData != null)
-            {
-                return part.InlineData.Data;
-            }
-
-            return null;
+            _analysisApiKey = configuration["Gemini:AnalysisApiKey"] ?? throw new ArgumentNullException("Gemini:AnalysisApiKey eksik.");
+            _imageApiKey = configuration["Gemini:ImageApiKey"] ?? throw new ArgumentNullException("Gemini:ImageApiKey eksik.");
         }
 
         public async Task<string> GetWorkoutPlanFromImageAsync(IFormFile imageFile, string userPrompt)
         {
             if (imageFile == null || imageFile.Length == 0)
-                throw new ArgumentException("Invalid image file.");
+                throw new ArgumentException("Geçersiz resim dosyası.");
 
-            // Convert image to Base64
             string base64Image;
             using (var ms = new MemoryStream())
             {
@@ -94,7 +33,6 @@ namespace WebProgramlamaProje.Services
                 base64Image = Convert.ToBase64String(ms.ToArray());
             }
 
-            // Prepare Request Payload
             var requestBody = new
             {
                 contents = new[]
@@ -118,26 +56,190 @@ namespace WebProgramlamaProje.Services
             };
 
             var jsonContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
-            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{ModelName}:generateContent?key={_apiKey}";
+            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{AnalysisModelName}:generateContent?key={_analysisApiKey}";
 
-            // Send Request
             var response = await _httpClient.PostAsync(url, jsonContent);
 
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Gemini API Error: {response.StatusCode} - {errorContent}");
+                throw new Exception($"Gemini Analiz API Hatası: {response.StatusCode} - {errorContent}");
             }
 
-            // Parse Response
             var responseString = await response.Content.ReadAsStringAsync();
             var geminiResponse = JsonSerializer.Deserialize<GeminiResponse>(responseString);
 
             return geminiResponse?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault()?.Text
-                   ?? "No analysis could be generated.";
+                   ?? "Analiz oluşturulamadı.";
         }
 
-        // DTO Classes for JSON Deserialization
+        public async Task<string> GenerateTargetBodyImageAsync(string imageDescription)
+        {
+            // PROMPT OPTİMİZASYONU:
+            // "Realistic photo" yerine "Fitness illustration" veya "Professional shot" gibi terimler 
+            // güvenlik filtrelerini aşmaya yardımcı olabilir. Promptun başına ekliyoruz.
+            var safePrompt = $"A high quality, professional fitness photo. {imageDescription}. Lighting studio, 8k resolution.";
+
+            var requestBody = new
+            {
+                contents = new[]
+                {
+                    new
+                    {
+                        parts = new object[]
+                        {
+                            new { text = safePrompt }
+                        }
+                    }
+                },
+                generationConfig = new
+                {
+                    responseModalities = new[] { "IMAGE" }
+                },
+                // KRİTİK GÜVENLİK AYARLARI:
+                // İnsan figürlerinin engellenmemesi için filtreleri gevşetiyoruz.
+                safetySettings = new[]
+                {
+                    new { category = "HARM_CATEGORY_HARASSMENT", threshold = "BLOCK_ONLY_HIGH" },
+                    new { category = "HARM_CATEGORY_HATE_SPEECH", threshold = "BLOCK_ONLY_HIGH" },
+                    new { category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold = "BLOCK_ONLY_HIGH" },
+                    new { category = "HARM_CATEGORY_DANGEROUS_CONTENT", threshold = "BLOCK_ONLY_HIGH" }
+                }
+            };
+
+            var jsonContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{ImageModelName}:generateContent?key={_imageApiKey}";
+
+            var response = await _httpClient.PostAsync(url, jsonContent);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Gemini Image API Error: {response.StatusCode} - {responseString}");
+                return $"ERROR: API Hatası {response.StatusCode} - Detay: {responseString}";
+            }
+
+            try
+            {
+                var geminiResponse = JsonSerializer.Deserialize<GeminiResponse>(responseString);
+                var candidate = geminiResponse?.Candidates?.FirstOrDefault();
+                var part = candidate?.Content?.Parts?.FirstOrDefault();
+
+                // 1. Resim verisi var mı kontrol et
+                if (part?.InlineData != null && !string.IsNullOrEmpty(part.InlineData.Data))
+                {
+                    // Data: "data:image/jpeg;base64,....." formatında gelmeyebilir, sadece base64 gelir.
+                    // HTML'de göstermek için başına prefix ekliyoruz.
+                    return $"data:{part.InlineData.MimeType ?? "image/jpeg"};base64,{part.InlineData.Data}";
+                }
+
+                // 2. Metin döndü mü? (Bazen hata mesajı metin olarak döner)
+                if (!string.IsNullOrEmpty(part?.Text))
+                {
+                    return $"UYARI: Model resim yerine metin döndü: {part.Text}";
+                }
+
+                // 3. Hata Analizi
+                if (!string.IsNullOrEmpty(candidate?.FinishReason))
+                {
+                    // FinishReason: STOP ise ama veri yoksa, genelde filtredir veya boş dönmüştür.
+                    return $"HATA: Görsel oluşturulamadı. Sebep: {candidate.FinishReason}. (Ham Yanıt: {responseString})";
+                }
+
+                return "HATA: Beklenmeyen yanıt formatı.";
+            }
+            catch (Exception ex)
+            {
+                return $"HATA: JSON Parse hatası: {ex.Message}";
+            }
+        }
+
+        public async Task<string> GenerateEditedImageAsync(IFormFile imageFile, string prompt)
+        {
+            if (imageFile == null || imageFile.Length == 0)
+                throw new ArgumentException("Geçersiz resim dosyası.");
+
+            string base64Image;
+            using (var ms = new MemoryStream())
+            {
+                await imageFile.CopyToAsync(ms);
+                base64Image = Convert.ToBase64String(ms.ToArray());
+            }
+
+            var requestBody = new
+            {
+                contents = new[]
+                {
+                    new
+                    {
+                        parts = new object[]
+                        {
+                            new { text = prompt },
+                            new
+                            {
+                                inlineData = new
+                                {
+                                    mimeType = imageFile.ContentType,
+                                    data = base64Image
+                                }
+                            }
+                        }
+                    }
+                },
+                generationConfig = new
+                {
+                    responseModalities = new[] { "IMAGE" }
+                },
+                safetySettings = new[]
+                {
+                    new { category = "HARM_CATEGORY_HARASSMENT", threshold = "BLOCK_ONLY_HIGH" },
+                    new { category = "HARM_CATEGORY_HATE_SPEECH", threshold = "BLOCK_ONLY_HIGH" },
+                    new { category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold = "BLOCK_ONLY_HIGH" },
+                    new { category = "HARM_CATEGORY_DANGEROUS_CONTENT", threshold = "BLOCK_ONLY_HIGH" }
+                }
+            };
+
+            var jsonContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{ImageModelName}:generateContent?key={_imageApiKey}";
+
+            var response = await _httpClient.PostAsync(url, jsonContent);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return $"ERROR: API Hatası {response.StatusCode} - Detay: {responseString}";
+            }
+
+            try
+            {
+                var geminiResponse = JsonSerializer.Deserialize<GeminiResponse>(responseString);
+                var candidate = geminiResponse?.Candidates?.FirstOrDefault();
+                var part = candidate?.Content?.Parts?.FirstOrDefault();
+
+                if (part?.InlineData != null && !string.IsNullOrEmpty(part.InlineData.Data))
+                {
+                    return $"data:{part.InlineData.MimeType ?? "image/jpeg"};base64,{part.InlineData.Data}";
+                }
+
+                if (!string.IsNullOrEmpty(part?.Text))
+                {
+                    return $"UYARI: Model resim yerine metin döndü: {part.Text}";
+                }
+
+                if (!string.IsNullOrEmpty(candidate?.FinishReason))
+                {
+                    return $"HATA: Görsel oluşturulamadı. Sebep: {candidate.FinishReason}. (Ham Yanıt: {responseString})";
+                }
+
+                return "HATA: Beklenmeyen yanıt formatı.";
+            }
+            catch (Exception ex)
+            {
+                return $"HATA: JSON Parse hatası: {ex.Message}";
+            }
+        }
+
+        // DTO Sınıfları
         private class GeminiResponse
         {
             [JsonPropertyName("candidates")]
@@ -148,6 +250,9 @@ namespace WebProgramlamaProje.Services
         {
             [JsonPropertyName("content")]
             public Content? Content { get; set; }
+
+            [JsonPropertyName("finishReason")]
+            public string? FinishReason { get; set; }
         }
 
         private class Content
@@ -161,13 +266,13 @@ namespace WebProgramlamaProje.Services
             [JsonPropertyName("text")]
             public string? Text { get; set; }
 
-            [JsonPropertyName("inline_data")]
+            [JsonPropertyName("inlineData")]
             public InlineData? InlineData { get; set; }
         }
 
         private class InlineData
         {
-            [JsonPropertyName("mime_type")]
+            [JsonPropertyName("mimeType")]
             public string? MimeType { get; set; }
 
             [JsonPropertyName("data")]

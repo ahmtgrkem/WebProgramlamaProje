@@ -1,44 +1,70 @@
-@model string
+@model WebProgramlamaProje.ViewModels.AIResultViewModel
 
 @{
     ViewData["Title"] = "Analiz Sonucu";
 }
 
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold text-primary"><i class="bi bi-stars me-2"></i>Yapay Zeka Analiz Sonucu</h2>
-                <a asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-1"></i> Yeni Analiz
-                </a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary"><i class="bi bi-stars me-2"></i>Yapay Zeka Analiz Sonucu</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Yeni Analiz
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Sol Taraf: Antrenman Programı (Text) -->
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-file-text me-2"></i>Antrenman ve Beslenme Programı</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="markdown-content">
+                        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 1rem; line-height: 1.6;">@Model.AnalysisResult</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Taraf: Görselleştirme -->
+        <div class="col-lg-5 mb-4">
+            <!-- Yüklenen Resim -->
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-bounding-box me-2"></i>Mevcut Durum</h5>
+                </div>
+                <div class="card-body text-center p-3">
+                    <img src="@Model.UploadedImageBase64" class="img-fluid rounded" alt="Uploaded Image" style="max-height: 300px;" />
+                </div>
             </div>
 
-            @if (ViewBag.GeneratedImage != null)
+            <!-- Üretilen Resim (Hedef) -->
+            @if (!string.IsNullOrEmpty(Model.GeneratedImageBase64))
             {
-                <div class="card shadow-lg border-0 mb-4">
+                <div class="card shadow-lg border-0">
                     <div class="card-header bg-success text-white">
-                        <h4 class="mb-0"><i class="bi bi-magic me-2"></i>6 Ay Sonraki Potansiyel Görünümünüz</h4>
+                        <h4 class="mb-0"><i class="bi bi-magic me-2"></i>6 Ay Sonraki Potansiyel</h4>
                     </div>
                     <div class="card-body text-center p-4">
-                        <img src="data:image/jpeg;base64,@ViewBag.GeneratedImage" class="img-fluid rounded shadow" alt="AI Generated Future Self" style="max-height: 500px;" />
-                        <p class="mt-3 text-muted">Yapay zeka tarafından oluşturulan tahmini görünüm.</p>
+                        <img src="@Model.GeneratedImageBase64" class="img-fluid rounded shadow" alt="AI Generated Future Self" />
+                        <p class="mt-3 text-muted small">Yapay zeka tarafından oluşturulan tahmini hedef görünüm.</p>
                     </div>
                 </div>
             }
-
-            <div class="card shadow-lg border-0">
-                <div class="card-body p-5">
-                    <div class="markdown-content">
-                        @* 
-                           Displaying raw text for now. 
-                           In a production environment, you would use a library like Markdig 
-                           to render this HTML safely: @Html.Raw(Markdig.Markdown.ToHtml(Model))
-                        *@
-                        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 1.1rem; line-height: 1.6;">@Model</pre>
-                    </div>
+            else
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i> Hedef görsel oluşturulamadı.
                 </div>
-                <div class="card-footer bg-light p-4 text-center">
+            }
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 bg-light">
+                <div class="card-body text-center">
                     <p class="mb-0 text-muted small">
                         <i class="bi bi-info-circle me-1"></i>
                         Yasal Uyarı: Bu bir yapay zeka önerisidir. Yeni bir antrenman programına başlamadan önce lütfen profesyonel bir eğitmene danışın.

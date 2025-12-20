@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "ContainingType": "WebProgramlamaProje.Controllers.Api.ReportsController",
+    "Method": "GetMonthlyIncome",
+    "RelativePath": "api/Reports/GetMonthlyIncome",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebProgramlamaProje.Controllers.Api.ReportsController",
+    "Method": "GetServiceStats",
+    "RelativePath": "api/Reports/GetServiceStats",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebProgramlamaProje.Controllers.Api.ReportsController",
+    "Method": "GetTopTrainers",
+    "RelativePath": "api/Reports/GetTopTrainers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebProgramlamaProje.Services;
+using WebProgramlamaProje.ViewModels;
 
 namespace WebProgramlamaProje.Controllers
 {
@@ -14,16 +15,15 @@ namespace WebProgramlamaProje.Controllers
             _geminiService = geminiService;
         }
 
-        // GET: AI
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
-        // POST: AI/AnalyzePhysique
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AnalyzePhysique(IFormFile imageFile, string? userNotes)
+        public async Task<IActionResult> AnalyzePhysique(IFormFile imageFile)
         {
             if (imageFile == null || imageFile.Length == 0)
             {
@@ -31,7 +31,6 @@ namespace WebProgramlamaProje.Controllers
                 return View("Index");
             }
 
-            // Validate file type (simple check)
             if (!imageFile.ContentType.StartsWith("image/"))
             {
                 ModelState.AddModelError("imageFile", "Sadece resim dosyaları kabul edilmektedir.");
@@ -40,27 +39,48 @@ namespace WebProgramlamaProje.Controllers
 
             try
             {
-                string prompt = "Bu resimdeki kişinin fiziksel durumunu kabaca analiz et (vücut tipi, duruş bozukluğu vb.) ve ona özel 3 temel egzersizden oluşan bir antrenman rutini öner. Ayrıca bu rutini 6 ay boyunca uygularsa fiziksel olarak nasıl görüneceğini detaylıca betimle. Cevabı tamamen Türkçe ver. Markdown formatında başlıklar ve maddeler kullanarak düzenli bir çıktı üret.";
-
-                if (!string.IsNullOrEmpty(userNotes))
+                string uploadedImageBase64;
+                using (var ms = new MemoryStream())
                 {
-                    prompt += $" Kullanıcı Notları: {userNotes}";
+                    await imageFile.CopyToAsync(ms);
+                    uploadedImageBase64 = $"data:{imageFile.ContentType};base64,{Convert.ToBase64String(ms.ToArray())}";
                 }
 
-                string analysisResult = await _geminiService.GetWorkoutPlanFromImageAsync(imageFile, prompt);
+                // 1. Analyze Physique
+                string analysisPrompt = "Bu vücut tipini kısaca analiz et (yağ oranı, kas kütlesi). Çok kısa, özet bir antrenman ve beslenme tavsiyesi ver. Uzun açıklamalardan kaçın, madde madde ve net ol.";
+                string analysisResult = await _geminiService.GetWorkoutPlanFromImageAsync(imageFile, analysisPrompt);
 
-                // Image Generation for "Future Self"
-                string imagePrompt = "Transform the person in this image to look more muscular, athletic and fit, as if they have been working out for 6 months. Keep the face, pose, clothing style and background exactly the same. Photorealistic style.";
-                string? generatedImageBase64 = await _geminiService.GenerateEditedImageAsync(imageFile, imagePrompt);
+                // 2. Generate Image Prompt (Simplified for now)
+                // In a real app, we might parse the analysisResult to get specific body type details.
+                string imageGenPrompt = "Keep the exact same person, face, pose, clothing and background. Only slightly increase muscle mass and definition to show an athletic physique. Do not change the lighting or environment. Photorealistic.";
 
-                ViewBag.GeneratedImage = generatedImageBase64;
+                // 3. Generate Target Body Image (Using the uploaded image as base)
+                string generatedImageResult = await _geminiService.GenerateEditedImageAsync(imageFile, imageGenPrompt);
 
-                return View("Result", model: analysisResult);
+                string? generatedImageBase64 = null;
+                if (!generatedImageResult.StartsWith("ERROR:") && !generatedImageResult.StartsWith("HATA:") && !generatedImageResult.StartsWith("UYARI:"))
+                {
+                    generatedImageBase64 = generatedImageResult;
+                }
+                else
+                {
+                    // Append error to analysis for debugging (optional, or handle silently)
+                    analysisResult += $"\n\n---\n[Sistem Bilgisi: Görsel oluşturulamadı. Hata: {generatedImageResult}]";
+                }
+
+                // 4. Prepare ViewModel
+                var viewModel = new AIResultViewModel
+                {
+                    AnalysisResult = analysisResult,
+                    GeneratedImageBase64 = generatedImageBase64 ?? "",
+                    UploadedImageBase64 = uploadedImageBase64
+                };
+
+                return View("Result", viewModel);
             }
             catch (Exception ex)
             {
-                // Log the error in a real app
-                ModelState.AddModelError("", "Yapay zeka analizi sırasında bir hata oluştu: " + ex.Message);
+                ModelState.AddModelError("", $"Bir hata oluştu: {ex.Message}");
                 return View("Index");
             }
         }

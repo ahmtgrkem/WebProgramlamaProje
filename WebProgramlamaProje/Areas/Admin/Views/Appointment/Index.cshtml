@@ -1,0 +1,75 @@
+@model IEnumerable<WebProgramlamaProje.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Randevu Yönetimi";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Randevu Yönetimi</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Tüm Randevular</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Üye</th>
+                            <th>Eğitmen</th>
+                            <th>Hizmet</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@item.AppUser?.FirstName @item.AppUser?.LastName</td>
+                                <td>@item.Trainer?.FirstName @item.Trainer?.LastName</td>
+                                <td>@item.Service?.Name</td>
+                                <td>
+                                    @if (item.Status == WebProgramlamaProje.Models.AppointmentStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark">Bekliyor</span>
+                                    }
+                                    else if (item.Status == WebProgramlamaProje.Models.AppointmentStatus.Confirmed)
+                                    {
+                                        <span class="badge bg-success">Onaylandı</span>
+                                    }
+                                    else if (item.Status == WebProgramlamaProje.Models.AppointmentStatus.Completed)
+                                    {
+                                        <span class="badge bg-primary">Tamamlandı</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">İptal</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Status == WebProgramlamaProje.Models.AppointmentStatus.Pending)
+                                    {
+                                        <form asp-action="Confirm" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm" title="Onayla">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        </form>
+                                        <form asp-action="Cancel" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="İptal Et">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

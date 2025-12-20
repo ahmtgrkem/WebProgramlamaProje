@@ -1,8 +1,78 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Section -->
+<div class="hero-section text-center text-white mb-5" style="margin-top: -1.5rem; padding: 6rem 1rem; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-position: center; border-radius: 0 0 2rem 2rem;">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3 hero-title">Hayalindeki Vücuda Kavuş</h1>
+        <p class="lead mb-4 fs-4">Profesyonel eğitmenler, modern ekipmanlar ve yapay zeka destekli analizlerle hedeflerine ulaş.</p>
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-4 gap-3 fw-bold">
+                    <i class="bi bi-person-plus-fill me-2"></i>Hemen Üye Ol
+                </a>
+            }
+            <a asp-controller="AI" asp-action="Index" class="btn btn-outline-light btn-lg px-4 fw-bold">
+                <i class="bi bi-stars me-2"></i>Yapay Zeka ile Analiz Et
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container mb-5">
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                <div class="card-body">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; font-size: 32px;">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold text-dark">Uzman Eğitmenler</h3>
+                    <p class="text-muted">Alanında sertifikalı ve deneyimli antrenörlerimizle kişisel hedeflerinize en hızlı şekilde ulaşın.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                <div class="card-body">
+                    <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; font-size: 32px;">
+                        <i class="bi bi-hdd-network"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold text-dark">Modern Ekipmanlar</h3>
+                    <p class="text-muted">Son teknoloji spor aletleri ve hijyenik çalışma alanları ile konforlu bir spor deneyimi yaşayın.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                <div class="card-body">
+                    <div class="feature-icon bg-warning bg-gradient text-dark rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; font-size: 32px;">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold text-dark">AI Destekli Program</h3>
+                    <p class="text-muted">Yapay zeka antrenörümüz ile vücut analizinizi yapın ve size özel antrenman programınızı oluşturun.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="container mb-5">
+    <div class="bg-light p-5 rounded-3 border shadow-sm">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold">Hala düşünüyor musun?</h2>
+                <p class="lead mb-0 text-muted">Bugün başla, yarın değişimi hisset. İlk antrenmanın bizden!</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a asp-controller="Service" asp-action="Index" class="btn btn-dark btn-lg">
+                    Hizmetleri İncele <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
