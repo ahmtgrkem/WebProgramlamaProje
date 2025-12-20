@@ -1,39 +1,69 @@
-# Spor Salonu Yönetim ve Randevu Sistemi
+# Spor Salonu Yönetim Sistemi (Gym Management System)
 
-Bu proje, bir üniversite ödevi kapsamında geliştirilen **ASP.NET Core MVC** tabanlı bir spor salonu yönetim ve randevu sistemidir. Kullanıcıların spor salonundaki hizmetleri görüntüleyebilmesi, antrenörleri inceleyebilmesi ve randevu alabilmesi hedeflenmektedir.
+Bu proje, modern bir spor salonunun yönetim ihtiyaçlarını karşılamak amacıyla geliştirilmiş kapsamlı bir web uygulamasıdır. ASP.NET Core 8.0 MVC mimarisi üzerine inşa edilmiş olup, yapay zeka destekli özellikler ve RESTful API servisleri ile zenginleştirilmiştir.
 
-## 🚀 Teknolojiler
+##  Özellikler
 
-- **Framework:** .NET 8.0 (ASP.NET Core MVC)
-- **ORM:** Entity Framework Core
-- **Kimlik Doğrulama:** Microsoft Identity
-- **Veritabanı:** MSSQL (Planlanan)
+*   **Yönetim Paneli (Admin Dashboard):**
+    *   Spor salonu şubeleri, eğitmenler ve hizmetlerin (Yoga, Pilates, Fitness vb.) tam CRUD yönetimi.
+    *   Kullanıcı dostu arayüz ve detaylı listeleme.
 
-## 📂 Proje Yapısı ve Modeller
+*   **Randevu Sistemi:**
+    *   Üyeler için kolay randevu oluşturma.
+    *   Eğitmen ve hizmet bazlı filtreleme.
+    *   Çakışma kontrolü (Aynı eğitmenin aynı saatte birden fazla randevusu olamaz).
 
-Proje şu an başlangıç aşamasındadır ve temel **Domain Modelleri (Entities)** oluşturulmuştur:
+*   **Yapay Zeka Antrenörü (Gemini AI):**
+    *   **Görsel Analiz:** Kullanıcıların yüklediği fotoğrafları analiz ederek vücut tipi ve duruş bozukluklarını tespit eder.
+    *   **Kişiselleştirilmiş Program:** Analiz sonucuna göre özel antrenman rutini oluşturur.
+    *   **Gelecek Simülasyonu:** Kullanıcının 6 ay sonraki potansiyel formunu görsel olarak üretir (Image Generation).
 
-- **Gym (Spor Salonu):** Salonun adı, adresi ve iletişim bilgilerini tutar.
-- **Service (Hizmet):** Fitness, Yoga, Pilates gibi hizmetlerin tanımı, süresi ve ücreti.
-- **Trainer (Antrenör):** Antrenörlerin uzmanlık alanları ve bilgileri.
-- **Appointment (Randevu):** Üyelerin aldığı randevuların tarihi, durumu ve ücreti.
-- **AppUser (Kullanıcı):** Sisteme kayıtlı üyeler (Ad, Soyad vb. ek bilgilerle).
+*   **Raporlama ve API:**
+    *   Swagger destekli REST API.
+    *   Aylık gelir raporları, popüler eğitmen analizleri ve hizmet kullanım istatistikleri.
 
-## 🛠️ Kurulum ve Çalıştırma
+##  Kurulum (Installation)
 
-1.  Projeyi bilgisayarınıza indirin.
-2.  Gerekli NuGet paketlerinin yüklendiğinden emin olun (`dotnet restore`).
-3.  Veritabanı bağlantı ayarlarını `appsettings.json` dosyasında yapılandırın (İlerleyen aşamalarda eklenecektir).
-4.  Projeyi derleyin ve çalıştırın:
-    ```bash
+Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları izleyin:
+
+1.  **Projeyi Klonlayın:**
+    `ash
+    git clone https://github.com/kullaniciadi/WebProgramlamaProje.git
+    cd WebProgramlamaProje
+    `
+
+2.  **Veritabanını Oluşturun:**
+    Proje dizininde terminali açın ve veritabanını güncellemek için şu komutu çalıştırın:
+    `ash
+    dotnet ef database update
+    `
+
+3.  **Gemini API Anahtarını Ayarlayın:**
+    Yapay zeka özelliklerinin çalışması için Google Gemini API anahtarına ihtiyacınız vardır. Anahtarı güvenli bir şekilde saklamak için .NET User Secrets kullanın:
+    `ash
+    dotnet user-secrets init
+    dotnet user-secrets set "Gemini:ApiKey" "BURAYA_API_ANAHTARINIZI_YAZIN"
+    `
+
+4.  **Projeyi Çalıştırın:**
+    `ash
     dotnet run
-    ```
+    `
 
-## 📝 Yapılacaklar (Todo)
+##  Kullanıcı Bilgileri
 
-- [x] Proje iskeletinin oluşturulması
-- [x] Veritabanı modellerinin (Entities) yazılması
-- [ ] DbContext sınıfının oluşturulması ve konfigürasyonu
-- [ ] Veritabanı Migration işlemlerinin yapılması
-- [ ] Controller ve View'lerin (Arayüz) kodlanması
-- [ ] Identity entegrasyonu (Kayıt Ol / Giriş Yap)
+Sisteme yönetici olarak giriş yapmak ve admin paneline erişmek için aşağıdaki varsayılan bilgileri kullanabilirsiniz:
+
+*   **E-posta:** ogrencinumarasi@sakarya.edu.tr
+*   **Şifre:** Sau.123!
+
+##  Teknoloji Yığını
+
+*   **Framework:** .NET 8.0 (ASP.NET Core MVC)
+*   **Veritabanı:** Entity Framework Core (SQL Server)
+*   **AI Entegrasyonu:** Google Gemini API (REST & JSON)
+*   **Frontend:** Bootstrap 5, jQuery Validation
+*   **API Dokümantasyonu:** Swagger / OpenAPI
+
+---
+*Bu proje Web Programlama dersi kapsamında geliştirilmiştir.*
